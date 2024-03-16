@@ -63,9 +63,9 @@ UserRouter.post('/login', async (req, res) => {
 
 UserRouter.post('/add-event', authCheck, async(req, res)=>{
     try {
-        const { eventName, email } = req.body;
-
-        const user = await User.findOne({ email });
+        const { eventName } = req.body;
+        console.log(eventName);
+        const user = await User.findOne({ email: req.user_email });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -84,6 +84,16 @@ UserRouter.post('/add-event', authCheck, async(req, res)=>{
         return res.status(500).json({ message: 'Internal Server Error' + error});
     }
 });
+
+UserRouter.get('/all-events', authCheck, async(req, res)=>{
+    try{
+      let all_events = await Event.find({});
+      console.log(all_events);
+      res.status(200).json({'message': 'success', 'data': all_events});
+    }catch(error){
+      res.status(404).json({'message': error});
+    }
+})
 
 UserRouter.post('/subscribe', authCheck, async(req, res)=>{
     const eventId = req.body.eventId;
